@@ -423,6 +423,19 @@
             google.maps.event.addListener(gmapContext.marker, "dragend", function(event) {
                 displayMarkerWithSelectedArea();
             });
+            google.maps.event.addListener(gmapContext.map, "click", function(event) {
+                if(gmapContext.settings.clickToMoveMarker) {
+                    // Below code is to prevent intereference with double-clicks i.e. double clicks will not move marker
+                    mapZoom = gmapContext.map.getZoom();
+                    setTimeout(function()  {
+                        if(gmapContext.map.getZoom() == mapZoom) {
+                            gmapContext.marker.setPosition(event.latLng);
+                            updateInputValues(gmapContext.settings.inputBinding, gmapContext);
+                            displayMarkerWithSelectedArea();
+                        }
+                    }, 200);
+                }
+            });
             GmUtility.setPosition(gmapContext, new google.maps.LatLng(settings.location.latitude, settings.location.longitude), function(context){
                 updateInputValues(settings.inputBinding, gmapContext);
                 // Set  input bindings if needed
@@ -458,6 +471,7 @@
         // must be undefined to use the default gMaps marker
         markerIcon: undefined,
         markerDraggable: true,
-        markerVisible : true
+        markerVisible : true,
+        clickToMoveMarker : false
     }
 }( jQuery ));
